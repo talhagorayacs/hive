@@ -7,8 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary': '#1f2937', // Customize this color as needed
-        'secondary': '#4b5563' // Example of a secondary color
+        primary: {
+          600: '#2563eb', // Example blue color
+          700: '#1d4ed8', // Darker blue color
+        },
       },
       fontSize: {
         'xl': ['1.25rem', { lineHeight: '1.75rem' }],

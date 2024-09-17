@@ -1,31 +1,20 @@
 <template>
-    <div>
-        <h1>Home</h1>
-    </div>
+  <Navbar/>
+  <Posts/>
 </template>
 
 <script>
-    export default {
-        
-    }
+import Navbar from './Navbar.vue';
+import Posts from './Posts.vue';
+
+export default {
+  name: "Home",
+  components: {
+    Navbar,
+    Posts
+  }
+};
 </script>
 
 <style scoped>
-
 </style>
-
-
-<template>
-   
-  </template>
-  <script>
-  import NavbarComponent from "../components/Navbar.vue";
-  import FooterComponent from "../components/Footer.vue";
-  export default {
-    name: "login-page",
-    components: {
-      NavbarComponent,
-      FooterComponent
-    }
-  }
-  </script>

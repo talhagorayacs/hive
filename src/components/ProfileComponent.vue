@@ -40,7 +40,7 @@
   
   <script>
   export default {
-    name: 'Header',
+    name: 'ProfileComponent',
     methods: {
       followUser() {
         // Implement follow functionality here

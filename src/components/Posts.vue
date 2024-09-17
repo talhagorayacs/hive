@@ -80,7 +80,7 @@
 
 <script>
 export default {
-  name: 'SocialMediaPost'
+  name: 'Posts'
 }
 </script>
 
