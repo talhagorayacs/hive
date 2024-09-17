@@ -15,17 +15,17 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({title,Id,content , featuredImage,userId,status}){
+    async createPost({caption , post,userId}){
             try {
                 return await this.databases.createDocument(
                     conf.appwriteDatabaseID,
-                    conf.appwritCollectionID,
+                    conf.appwriteCollectionID,
                     ID.unique(),
                     {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
+                  
+                    caption,
+                    post,
+                   
                     userId
                     }
                 )
@@ -35,7 +35,7 @@ export class Service {
             }
     }
 
-    async updatePost(Id,{title,content,featuredImage,status}){
+    async updatePost(Id,{title,caption,post,status}){
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseID,
@@ -43,8 +43,8 @@ export class Service {
                 Id,
                 {
                     title,
-                    content,
-                    featuredImage,
+                    caption,
+                    post,
                     status
                 }
             )
@@ -133,3 +133,7 @@ export class Service {
         }
     }
 }
+
+const postService = new Service()
+
+export default postService;

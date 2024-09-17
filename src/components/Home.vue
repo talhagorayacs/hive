@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import Navbar from './Navbar.vue';
+import Navbar from './Navbar.vue'
 import Posts from './Posts.vue';
 
 export default {
