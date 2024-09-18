@@ -6,7 +6,7 @@ import SignUp from '../components/SignUp.vue';
 import ProfileComponent from '../components/ProfileComponent.vue';
 import UploadPost from '../components/UploadPost.vue';
 import store from '../store'
-import UploadProfile from '../components/uploadProfile.vue';
+import UploadProfile from '../components/UploadProfile.vue';
 
 const routes = [
     {
