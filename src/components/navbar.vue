@@ -7,11 +7,14 @@
       <div class="flex items-center justify-between">
         <!-- Instagram Logo Text -->
         <a
-          href="#"
-          class="flex items-center text-2xl font-semibold dark:text-gray-900"
-        >
-          Instagram
-        </a>
+  href="#"
+  class="flex items-center text-2xl font-semibold dark:text-gray-900"
+>
+  <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 font-display">
+    Welome Back : {{ userName }}
+  </span>
+</a>
+
 
         <!-- Search Bar (Hidden on small screens) -->
         <div class="hidden lg:flex flex-grow max-w-md mx-auto relative">
@@ -49,9 +52,9 @@
           </a>
 
           <!-- Message Icon -->
-          <a href="#" class="text-xl text-gray-500 dark:text-gray-900">
+          <button @click="getUserData" class="text-xl text-gray-500 dark:text-gray-900">
             <i class="fas fa-paper-plane"></i>
-          </a>
+          </button>
 
           <!-- Add Post Icon -->
           <router-link
@@ -121,7 +124,7 @@
 <script>
 import axios from "axios";
 import { debounce } from "lodash";
-import { mapActions } from "vuex";
+import { mapActions,mapGetters } from "vuex";
 import Loader from "./Loader.vue";
 
 export default {
@@ -134,10 +137,19 @@ export default {
       searchQuery: "",
       suggestions: [],
       isLoading: false,
+      // userName: this.userData
     };
+  },
+  computed:{
+    ...mapGetters("auth", ["userData"]),
+    userName(){
+      return this.userData.name.toUpperCase()
+    }
+    
   },
   methods: {
     ...mapActions("auth", ["logout"]),
+    
     debouncedSearch: debounce(function () {
       this.fetchSuggestions();
     }, 300),
@@ -161,6 +173,7 @@ export default {
     //Logout Func
 
     async clearUser() {
+      
       this.isLoading = true;
       try {
         await this.logout();
@@ -172,6 +185,7 @@ export default {
         this.isLoading = false;
       }
     },
+   
   },
 };
 </script>

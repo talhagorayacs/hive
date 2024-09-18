@@ -15,7 +15,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({caption , post,userId}){
+    async createPost({caption , post,userId,userName}){
             try {
                 return await this.databases.createDocument(
                     conf.appwriteDatabaseID,
@@ -25,8 +25,8 @@ export class Service {
                   
                     caption,
                     post,
-                   
-                    userId
+                    userId,
+                    userName
                     }
                 )
             } catch (error) {
@@ -35,17 +35,18 @@ export class Service {
             }
     }
 
-    async updatePost(Id,{title,caption,post,status}){
+    async updatePost(Id,{title,caption,post,status,userName}){
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseID,
-                conf.appwritCollectionID,
+                conf.appwriteCollectionID,
                 Id,
                 {
                     title,
                     caption,
                     post,
-                    status
+                    status,
+                    userName
                 }
             )
         } catch (error) {
@@ -54,11 +55,11 @@ export class Service {
         }
     }
 
-    async deletePost(Id,){
+    async deletePost(Id){
         try {
             return await this.databases.deleteDocument(
                 conf.appwriteDatabaseID,
-                conf.appwritCollectionID,
+                conf.appwriteCollectionID,
                 Id
             )
         } catch (error) {
@@ -71,7 +72,7 @@ export class Service {
         try {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseID,
-                conf.appwritCollectionID,
+                conf.appwriteCollectionID,
                 Id
             )
         } catch (error) {
@@ -80,18 +81,19 @@ export class Service {
         }
      }
 
-     async getAllPosts(queries = Query.equal("status", "active")){
+     async getAllPosts() {
         try {
-            return this.databases.listDocuments(
+            return await this.databases.listDocuments(
                 conf.appwriteDatabaseID,
-                conf.appwritCollectionID,
-                queries
-            )
+                conf.appwriteCollectionID
+            );
         } catch (error) {
-            console.log("error gettting all the posts : "  , error);
-            
+            console.log("Error getting all the posts:", error);
+            throw error; // Optional: re-throw the error to handle it later
         }
-     }
+    }
+    
+    
 
     //  file uploading
 
@@ -123,7 +125,7 @@ export class Service {
 
     async getFilePreview(fileId){
         try {
-            return await this.storage.getFilePreviewI(
+            return await this.storage.getFilePreview(
                 conf.appwriteBucketID,
                 fileId
             )

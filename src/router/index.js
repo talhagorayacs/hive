@@ -6,6 +6,7 @@ import SignUp from '../components/SignUp.vue';
 import ProfileComponent from '../components/ProfileComponent.vue';
 import UploadPost from '../components/UploadPost.vue';
 import store from '../store'
+import UploadProfile from '../components/uploadProfile.vue';
 
 const routes = [
     {
@@ -34,6 +35,11 @@ const routes = [
         path: '/uploadPost',
         name: "UploadPost",
         component: UploadPost,
+        meta:{requireAuth:true}
+    },{
+        path:'/uploadProfile',
+        name:"uploadProfile",
+        component: UploadProfile,
         meta:{requireAuth:true}
     }
 ];
