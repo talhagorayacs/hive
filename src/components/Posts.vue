@@ -12,23 +12,20 @@
             />
             <div>
               <p class="text-gray-800 font-semibold">{{ post.userName }}</p>
-              <p class="text-gray-500 text-sm">Posted just now</p>
+              <p class="text-gray-500 text-sm">{{ formatTime(post.$createdAt) }}</p>
             </div>
           </div>
           <div class="relative">
-            <!-- Dropdown toggle button -->
             <button @click="toggleDropdown(post.$id)" class="text-gray-500 hover:bg-gray-100 rounded-full p-1">
               <i class="fas fa-ellipsis-v"></i>
             </button>
-
-            <!-- Dropdown menu -->
             <div v-if="dropdownOpen === post.$id" class="absolute right-0 mt-2 w-44 z-10 bg-white divide-y divide-gray-200 rounded-lg shadow-lg">
               <ul class="py-2 text-sm text-gray-700">
                 <li>
                   <button class="block px-4 py-2 hover:bg-gray-100">Profile</button>
                 </li>
                 <li>
-                  <button  @click="deletePost(post.$id)" class="block px-4 py-2 hover:bg-gray-100">Delete Post</button>
+                  <button @click="deletePost(post.$id)" class="block px-4 py-2 hover:bg-gray-100">Delete Post</button>
                 </li>
               </ul>
             </div>
@@ -46,7 +43,6 @@
           />
         </div>
         <div class="flex items-center justify-between text-gray-500">
-          <!-- Display dynamic likes and comments -->
           <button class="flex items-center space-x-2 px-2 hover:bg-gray-50 rounded-full p-1">
             <i class="fas fa-heart"></i>
             <span>{{ post.likes }} Likes</span>
@@ -61,70 +57,73 @@
   </div>
 </template>
 
-
-
-
-
 <script>
 import postService from '../appwrite/service';
 import Loader from './Loader.vue';
 
 export default {
   name: 'Posts',
-  components:{
+  components: {
     Loader
   },
   data() {
     return {
       posts: [],
       dropdownOpen: null,
-      isLoading:false
+      isLoading: false
     };
   },
   methods: {
     async loadAllPosts() {
-      this.isLoading=true
+  this.isLoading = true;
+  try {
+    const response = await postService.getAllPosts();
+    console.log('Response from getProfileDetails:', response);
+
+    this.posts = response.documents;
+
+    // Map image IDs to their URLs and convert createdAt to Date object
+    for (const post of this.posts) {
+      const imageUrl = await postService.getFilePreview(post.post);
+      post.imageUrl = imageUrl; // Add the URL to the post object
+      post.$createdAt = new Date(post.$createdAt); // Convert to Date object
+    }
+
+    // Sort posts by creation time in descending order
+    this.posts.sort((a, b) => b.$createdAt - a.$createdAt);
+    
+    console.log(this.posts);
+  } catch (error) {
+    console.log("Error loading posts:", error);
+  } finally {
+    this.isLoading = false;
+  }
+}
+,
+
+    formatTime(date) {
+      const now = new Date();
+      const seconds = Math.floor((now - date) / 1000);
+      if (seconds < 60) return 'Posted just now';
+      if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+      if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+      return `${Math.floor(seconds / 86400)} days ago`;
+    },
+
+    async deletePost(postId) {
+      this.isLoading = true;
       try {
-        const response = await postService.getAllPosts();
-        console.log('Response from getProfileDetails:', response);
-
-        this.posts = response.documents;
-
-        // Map image IDs to their URLs
-        for (const post of this.posts) {
-          const imageUrl = await postService.getFilePreview(post.post);
-          post.imageUrl = imageUrl; // Add the URL to the post object
-        }
-        
-        console.log(this.posts);
+        await postService.deletePost(postId);
+        this.loadAllPosts();
       } catch (error) {
-        console.log("Error loading posts:", error);
-      }
-      finally{
-        this.isLoading=false
+        console.log("Error deleting post:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
-      async deletePost(postId){
-        this.isLoading=true
-        try {
-          await postService.deletePost(postId)
-          this.loadAllPosts()
-        } catch (error) {
-          console.log("erorr in deleteing post in posts ",error);
-          
-        }finally{
-          this.isLoading=false
-        }
-      },
-
-
     toggleDropdown(postId) {
-      if (this.dropdownOpen === postId) {
-        this.dropdownOpen = null;
-      } else {
-        this.dropdownOpen = postId;
-      }
+      this.dropdownOpen = this.dropdownOpen === postId ? null : postId;
     },
   },
   created() {
@@ -132,4 +131,3 @@ export default {
   },
 };
 </script>
-
