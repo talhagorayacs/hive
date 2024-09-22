@@ -84,7 +84,7 @@
             <router-link to="/profile">
               <img
                 class="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                :src="imageUrl"
                 alt="user photo"
               />
             </router-link>
@@ -126,6 +126,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { mapActions,mapGetters } from "vuex";
 import Loader from "./Loader.vue";
+import profileService from '../appwrite/profileService';
 
 export default {
   name: "Navbar",
@@ -137,14 +138,18 @@ export default {
       searchQuery: "",
       suggestions: [],
       isLoading: false,
-      // userName: this.userData
+      imageUrl:''
     };
   },
   computed:{
     ...mapGetters("auth", ["userData"]),
     userName(){
       return this.userData.name.toUpperCase()
-    }
+    },
+    userId() {
+      return this.userData.$id;
+    },
+  
     
   },
   methods: {
@@ -186,7 +191,25 @@ export default {
       }
     },
    
+
+    //Profile Picture
+
+    async getProfileData() {
+      try {
+        const response = await profileService.getProfileDetails(this.userId);
+        const imageUrl = await profileService.getFilePreview(response.profilePhoto);
+        this.imageUrl = imageUrl;
+      } catch (error) {
+        console.log("Error fetching profile details:", error);
+      }
+    },
+
+
+
   },
+  created(){
+    this.getProfileData()
+  }
 };
 </script>
 

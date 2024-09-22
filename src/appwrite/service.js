@@ -93,6 +93,23 @@ export class Service {
         }
     }
     
+    async getPostsByUserId(userId) {
+        try {
+            const response = await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteCollectionID,
+                [
+                    // This is the query to filter documents by userId
+                    Query.equal('userId', userId)
+                ]
+            );
+            return response; // Return the filtered posts
+        } catch (error) {
+            console.log("Error getting posts by userId:", error);
+            throw error; // Optional: re-throw the error to handle it later
+        }
+    }
+    
     
 
     //  file uploading

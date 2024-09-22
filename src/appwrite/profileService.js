@@ -1,4 +1,4 @@
-import { Client, Databases, ID, Query, Storage } from "appwrite";
+import { Client, Databases, Storage ,Query} from "appwrite";
 import conf from '../conf.js';
 
 export class ProfileService {
@@ -15,56 +15,62 @@ export class ProfileService {
         this.storage = new Storage(this.client);
     }
 
-    // Create a new profile document
-    async createProfile({ userId, userName, description, profilePhoto, followers, posts, following }) {
+    // Create or update a profile document
+    async createOrUpdateProfile({ userId, userName, description, profilePhoto }) {
         try {
-            // Ensure that all required fields are included in the document
-            return await this.databases.createDocument(
-                conf.appwriteDatabaseID,
-                conf.appwriteProfileCollectionID,
-                ID.unique(), // Automatically generate a unique ID for the new document
-                {
-                    userId,       // Ensure this field matches your Appwrite schema
-                    userName,
-                    description,
-                    profilePhoto,
-                    followers,
-                    following,
-                    posts
-                }
-            );
+            // Check if the document for this userId exists
+            const profileExists = await this.getProfileDetails(userId);
+            
+            if (profileExists) {
+                // If the profile exists, update it
+                return await this.updateProfile(userId, { userName, description, profilePhoto });
+            } else {
+                // If no profile exists, create a new one
+                return await this.databases.createDocument(
+                    conf.appwriteDatabaseID,
+                    conf.appwriteProfileCollectionID,
+                    userId,
+                    {
+                        userId, // Set userId as a required field
+                        userName,
+                        description,
+                        profilePhoto
+                    }
+                );
+            }
         } catch (error) {
-            console.log("Error creating profile:", error);
+            console.log("Error creating/updating profile:", error);
         }
     }
 
     // Upload profile image to the bucket
-    async uploadProfileImage(file) {
-        try {
-            return await this.storage.createFile(
-                conf.appwriteProfileBucketID,
-                ID.unique(),
-                file
-            );
-        } catch (error) {
-            console.log("Error uploading profile image:", error);
-        }
+   // Upload profile image to the bucket
+   async uploadProfileImage(file) {
+    try {
+        return await this.storage.createFile(
+            conf.appwriteProfileBucketID,
+            'unique()', // Use Appwrite's unique ID generation
+            file
+        );
+    } catch (error) {
+        console.log("Error uploading profile image:", error);
+        throw error; // Re-throw the error for further handling
     }
+}
+
+
 
     // Update an existing profile document
-    async updateProfile(documentId, { userName, description, profilePhoto, followers, posts, following }) {
+    async updateProfile(userId, { userName, description, profilePhoto }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseID,
                 conf.appwriteProfileCollectionID,
-                documentId, // Use the ID of the document to update
+                userId, // Use the document ID for the update
                 {
                     userName,
                     description,
-                    profilePhoto,
-                    followers,
-                    following,
-                    posts
+                    profilePhoto
                 }
             );
         } catch (error) {
@@ -72,6 +78,7 @@ export class ProfileService {
         }
     }
 
+    // Fetch profile details
     async getProfileDetails(userId) {
         try {
             const response = await this.databases.listDocuments(
@@ -91,19 +98,24 @@ export class ProfileService {
         }
     }
 
-
-    async getProfilePhoto(id){
+    // Delete the old document before updating
+    async deleteOldData(userId) {
         try {
-            return await this.storage.getFile(
-                conf.appwriteProfileBucketID,
-               id
-            )
+            const profile = await this.getProfileDetails(userId);
+            if (profile) {
+                return await this.databases.deleteDocument(
+                    conf.appwriteDatabaseID,
+                    conf.appwriteProfileCollectionID,
+                    userId
+                );
+            } else {
+                console.log("No existing profile found to delete.");
+            }
         } catch (error) {
-            console.log("error in fetching profile photo");
-            
+            console.log("Error in deleting old profile data:", error);
         }
     }
-
+    
     async getFilePreview(fileId){
         try {
             return await this.storage.getFilePreview(
@@ -115,36 +127,7 @@ export class ProfileService {
             
         }
     }
-
-
-      // delete file 
-      async deleteFile(fileId){
-        try {
-            return await this.storage.deleteFile(
-                conf.appwriteProfileBucketID,
-                fileId
-            )
-            
-        } catch (error) {
-            console.log("error deletting file :" , error);
-            
-        }
-    }
-
-    async deleteOldData(Id){
-        try {
-            return await this.databases.deleteDocument(
-                conf.appwriteDatabaseID,
-                conf.appwriteCollectionID,
-                Id
-            )
-        } catch (error) {
-            console.log("error in deleting post" , error);
-            
-        }
-    }
 }
 
 const profileService = new ProfileService();
-
 export default profileService;

@@ -86,6 +86,8 @@ export default {
       this.isLoading=true
       try {
         const response = await postService.getAllPosts();
+        console.log('Response from getProfileDetails:', response);
+
         this.posts = response.documents;
 
         // Map image IDs to their URLs
