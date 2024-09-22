@@ -62,15 +62,20 @@ export default {
   },
   methods: {
     async getProfileData() {
-      try {
-        const response = await profileService.getProfileDetails(this.userId);
-        const imageUrl = await profileService.getFilePreview(response.profilePhoto);
-        this.imageUrl = imageUrl;
-        this.description = response.description;
-      } catch (error) {
-        console.log("Error fetching profile details:", error);
-      }
-    },
+  try {
+    const response = await profileService.getProfileDetails(this.userId);
+    if (response) {
+      const imageUrl = await profileService.getFilePreview(response.profilePhoto);
+      this.imageUrl = imageUrl;
+      this.description = response.description;
+    } else {
+      console.log("No profile data found");
+    }
+  } catch (error) {
+    console.log("Error fetching profile details:", error);
+  }
+},
+
 
     async loadAllPosts() {
       this.isLoading = true;
