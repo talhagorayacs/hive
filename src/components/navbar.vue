@@ -47,14 +47,14 @@
         <!-- Navbar Icons with Font Awesome -->
         <div class="flex items-center space-x-4 lg:space-x-12">
           <!-- Home Icon -->
-          <a href="#" class="text-xl text-gray-500 dark:text-gray-900">
+          <router-link to="/" class="text-xl text-gray-500 dark:text-gray-900">
             <i class="fas fa-home"></i>
-          </a>
+          </router-link>
 
           <!-- Message Icon -->
-          <button @click="getUserData" class="text-xl text-gray-500 dark:text-gray-900">
+          <!-- <button @click="getUserData" class="text-xl text-gray-500 dark:text-gray-900">
             <i class="fas fa-paper-plane"></i>
-          </button>
+          </button> -->
 
           <!-- Add Post Icon -->
           <router-link
@@ -65,9 +65,9 @@
           </router-link>
 
           <!-- Explore Icon -->
-          <a href="#" class="text-xl text-gray-500 dark:text-gray-900">
+          <!-- <a href="#" class="text-xl text-gray-500 dark:text-gray-900">
             <i class="fas fa-compass"></i>
-          </a>
+          </a> -->
 
           <!-- Like Icon -->
           <button
